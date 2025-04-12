@@ -1,0 +1,39 @@
+# Đây là file cấu hình CI cho ứng dụng Calculator sử dụng GitHub Actions.
+
+name: Java test  # Tên của workflow sẽ hiển thị trong tab "Actions" trên GitHub
+
+# Kích hoạt workflow khi có các sự kiện sau:
+on:
+  push:  # Khi có hành động push code
+    branches:
+      - main       # Chạy khi push lên nhánh main
+      - lab8       # Hoặc nhánh lab8
+  pull_request:  # Khi có pull request gửi đến các nhánh này
+    branches:
+      - main
+      - lab8
+
+jobs:
+  build:
+    # Công việc (job) sẽ chạy trên môi trường Ubuntu mới nhất
+    runs-on: ubuntu-latest
+
+    steps:
+      # Bước 1: Tải mã nguồn từ repository GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Bước 2: Cài đặt Java (ở đây là Java 23) để sử dụng trong build Maven
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '23'  # Phiên bản Java để sử dụng
+          distribution: 'temurin'  # Bản phân phối Temurin (được khuyên dùng)
+
+      # Bước 3: Build project với Maven bằng cách chạy lệnh "clean install"
+      - name: Build with Maven
+        run: mvn clean install  # Xoá bản build cũ và cài lại toàn bộ dependencies
+
+      # Bước 4: Chạy unit test bằng Maven
+      - name: Run Tests
+        run: mvn test  # Chạy các test và hiển thị kết quả trên tab Actions
